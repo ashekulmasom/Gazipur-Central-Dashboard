@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>অ্যাডমিন · Achievers’ Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.wrap{max-width:980px}
+img.logo{height:84px;width:auto;mix-blend-mode:multiply;display:block}
+h1{font-size:30px;margin:6px 0 4px}h3{font-size:16px;margin:0 0 6px}
+.rc{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#FFFBFD}
+.rc.done{border-color:#7CC4BC;background:#F4FBFA}.rc.err{border-color:#E7A0A8;background:#FFF6F7}.rc.warn{border-color:#F5DFA0;background:#FFFCF2}
+#drop{border:2px dashed #8A6A7B;border-radius:14px;background:#FFF8FB;padding:34px 18px;text-align:center;cursor:pointer}
+#drop.over{background:#FFE3F0;border-color:var(--pink)}
+#drop b{font-size:18px;color:var(--pink)}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}.row>div{flex:1 1 180px}
+ul.ln{list-style:none;padding:0;margin:8px 0 0}ul.ln li{margin:4px 0;font-size:14.5px}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--low);font-weight:600}.bad{color:#B00020;font-weight:600}
+table{min-width:0;font-size:14px}th,td{text-align:left}
+.b{display:inline-block;font-size:12px;border-radius:999px;padding:1px 9px;font-weight:600}
+.b.g{background:#DDF3EF;color:var(--ok)}.b.y{background:#FFF0C8;color:var(--low)}.b.n{background:#EEE;color:#555}
+details>summary{cursor:pointer;font-weight:700;color:var(--pink);font-size:17px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.cond{display:grid;grid-template-columns:2fr 1.2fr 1.2fr auto;gap:8px;margin-top:8px;align-items:center}
+@media (max-width:640px){.cond{grid-template-columns:1fr}}
+.tiny{font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<img class="logo" src="logo.jpg" alt="Achievers’ Club">
+<div class="mut" style="color:var(--pink);font-weight:600">⚙️ অ্যাডমিন · প্রাইভেট পেজ</div>
+<h1>📤 রিপোর্ট আপলোড ও প্রকাশ</h1>
+<nav class="tabs" id="nav" hidden><a href="index.html">🏆 Achievers’ Club দেখুন</a><a href="service.html">🛠️ Market Service দেখুন</a><a href="admin.html" class="on">⚙️ অ্যাডমিন</a></nav>
+
+<section class="panel" id="s1">
+  <h2>১. অ্যাডমিন সাইন-ইন</h2>
+  <label for="tk">GitHub অ্যাক্সেস টোকেন</label>
+  <input id="tk" type="password" autocomplete="off" placeholder="github_pat_…">
+  <p class="mut">শুধু রিপোজিটরির মালিক (লেখার অনুমতিসহ টোকেন) ডেটা প্রকাশ করতে পারবেন। টোকেন শুধু এই ব্রাউজারেই থাকে।</p>
+  <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="rem" style="width:auto;min-height:0"> এই কম্পিউটারে মনে রাখুন</label>
+  <div class="btns"><button id="con" type="button">অ্যাডমিন হিসেবে সাইন ইন</button></div>
+  <div id="m1" class="bad" style="margin-top:8px"></div>
+</section>
+
+<div id="main" hidden>
+<section class="panel">
+  <h2>২. কোন মাসের রিপোর্ট বানাচ্ছেন?</h2>
+  <div class="row"><div><label for="mon">রিপোর্টের মাস</label><select id="mon"></select></div></div>
+  <p class="mut" id="mst" style="margin-top:8px"></p>
+  <p class="tiny">উদাহরণ: অক্টোবরে বসে সেপ্টেম্বরের ফাইনাল রিপোর্ট বানাতে “Sep” বেছে নিন, তারপর সেপ্টেম্বরের ফাইল দিন। TRX রিপোর্টের তারিখ দেখে সাইট নিজেই বোঝে কোনটা এই মাসের আর কোনটা গত মাসের (LMTD)।</p>
+</section>
+
+<section class="panel">
+  <h2>৩. রিপোর্ট আপলোড করুন</h2>
+  <p class="mut">যেকোনো রিপোর্ট, যেকোনো ক্রমে, একসাথে বা আলাদা দিনে দিন। কোনটা কী রিপোর্ট, সাইট কলামের নাম দেখে চেনে (কলাম জায়গা বদলালেও সমস্যা নেই)। মাসের শুরুতে প্রথমে RA-DSS টার্গেট ফাইল দিন। প্রতিদিন: সর্বশেষ TRX + REG + UBP; গ্রোথের জন্য গত মাসের একই তারিখের TRX একবার।</p>
+  <div id="drop" tabindex="0" role="button" aria-label="রিপোর্ট ফাইল বেছে নিন">
+    <b>📂 এখানে ফাইল টেনে আনুন, অথবা ক্লিক করে বেছে নিন</b>
+    <div class="mut">একসাথে অনেকগুলো ফাইল দেওয়া যায় (.xlsx / .xls / .xlsb / .csv)</div>
+    <input id="file" type="file" multiple accept=".xlsx,.xls,.xlsb,.csv" hidden>
+  </div>
+  <div id="files"></div>
+</section>
+
+<section class="panel">
+  <h2>৪. কোন রিপোর্ট কোন তারিখ পর্যন্ত</h2>
+  <div class="scroll"><table id="slots"></table></div>
+</section>
+
+<section class="panel">
+  <details>
+    <summary>🎯 টার্গেট সেটিংস</summary>
+    <div class="row"><div><label for="savCnt">SAV-CNT: প্রতি ডিএসও মাসিক টার্গেট</label><input id="savCnt" type="number" min="0" step="1"></div></div>
+    <div class="tiny" style="margin-top:6px">ডিএসএস টার্গেট = ডিএসও সংখ্যা × এই সংখ্যা। ওএম-এর SAV-CNT টার্গেট Savings রিপোর্টের MA Wise শিটে থাকলে সেখান থেকেই নেওয়া হয়।</div>
+    <h3 style="margin-top:16px">D2C মাসিক টার্গেট (ডিএইচ অনুযায়ী, টাকায়)</h3>
+    <div class="tiny">ওএম-এর BZP টার্গেট = A2M টার্গেট + D2C টার্গেট। খালি রাখলে শুধু A2M টার্গেট ধরা হবে।</div>
+    <div class="row" id="d2cIn"></div>
+  </details>
+</section>
+
+<section class="panel">
+  <h2>৫. প্রকাশ করুন</h2>
+  <p class="mut">প্রকাশ করলে GitHub-এর data ফোল্ডারে এই মাসের ফাইল বদলে যাবে। এক-দুই মিনিটের মধ্যে সাইটে নতুন সংখ্যা দেখা যাবে।</p>
+  <div class="btns"><button id="pub" type="button" disabled>GitHub-এ প্রকাশ করুন</button><button id="dl" type="button" class="ghost" disabled>ফাইলগুলো ডাউনলোড করুন</button></div>
+  <div id="msg" style="margin-top:12px;font-weight:600"></div>
+</section>
+
+<section class="panel">
+  <details id="critBox">
+    <summary>🧩 মার্কেট সার্ভিস ক্রাইটেরিয়া (অতিরিক্ত অপশন — নিয়মিত কাজে লাগে না)</summary>
+    <p class="mut">এখানে নতুন ট্র্যাকিং ক্রাইটেরিয়া যোগ করুন বা বিদ্যমানগুলো বদলান। প্রতিটি ক্রাইটেরিয়া এজেন্ট-ভিত্তিক শর্ত দিয়ে গোনে (বা যোগ করে), তারপর ডিএসও → ডিএসএস → ডিএইচ অনুযায়ী Market Service পেজে দেখায়। ফিল্ডের নাম: <b>DTR:</b> = TRX রিপোর্টের কলাম, <b>REG:</b>, <b>UBP:</b>, <b>R78:</b>, <b>B2BID:</b>, <b>X:</b> (অন্য রিপোর্ট), <b>CALC:</b> = হিসাব করা ফিল্ড।</p>
+    <div id="cmsg" class="mut"></div>
+    <div class="scroll"><table id="clist"></table></div>
+    <div class="btns"><button type="button" id="cadd">➕ নতুন ক্রাইটেরিয়া</button><button type="button" class="ghost" id="cdef">↺ ডিফল্টে ফিরুন</button></div>
+    <div id="ced" class="rc" hidden>
+      <h3 id="cedT">ক্রাইটেরিয়া</h3>
+      <div class="row">
+        <div style="flex:2 1 260px"><label for="cn">নাম</label><input id="cn" placeholder="যেমন: Star Agent with Zero B2B"></div>
+        <div><label for="ck">ধরন</label><select id="ck"><option value="count">এজেন্ট গোনা (Count)</option><option value="sum">একটি ফিল্ডের যোগফল (Sum)</option><option value="pct">শতাংশ (A ÷ B × 100)</option></select></div>
+      </div>
+      <div id="cCondBox">
+        <label style="margin-top:12px">শর্ত (সবগুলো মিলতে হবে)</label>
+        <div id="conds"></div>
+        <div class="btns"><button type="button" class="ghost sm" id="cplus">+ শর্ত যোগ</button></div>
+      </div>
+      <div id="cSumBox" class="row" hidden><div><label for="csf">কোন ফিল্ডের যোগফল</label><input id="csf" list="flist" placeholder="যেমন DTR:MTD CI AMT"></div></div>
+      <div id="cPctBox" class="row" hidden>
+        <div><label for="cnum">লব (A)</label><select id="cnum"></select></div>
+        <div><label for="cden">হর (B)</label><select id="cden"></select></div>
+      </div>
+      <div class="btns"><button type="button" id="csave">সংরক্ষণ</button><button type="button" class="ghost" id="ccan">বাতিল</button></div>
+      <div id="cerr" class="bad"></div>
+    </div>
+    <datalist id="flist"></datalist><datalist id="vlist"></datalist>
+  </details>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="assets/engine.js"></script>
+<script>
+const OWNER = 'ashekulmasom', REPO = 'Gazipur-Central-Dashboard';
+const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const E = Engine;
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const tk = () => $('#tk').value.trim();
+const hdr = (acc) => ({ Authorization: 'Bearer ' + tk(), Accept: acc || 'application/vnd.github+json' });
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const monLabel = m => { const [y, mo] = m.split('-'); return `${MON[+mo - 1]} ${y}`; };
+const store = (k, v) => { try { if (v === null) localStorage.removeItem(k); else if (v === undefined) return localStorage.getItem(k); else localStorage.setItem(k, v); } catch (e) { } return null; };
+
+let S = null, IDX = { months: [], latest: '', criteria: null }, jobs = [], jid = 0, idxDirty = false;
+
+/* ---------- IndexedDB: আপলোড করা এজেন্ট-ভিত্তিক রিপোর্ট এই কম্পিউটারে রাখা (ক্রাইটেরিয়া বদলালে আবার হিসাবের জন্য) ---------- */
+const IDB = {
+  open() { return new Promise((res, rej) => { const r = indexedDB.open('gcd-admin', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async get(k) { try { const db = await this.open(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch (e) { return null; } },
+  async set(k, v) { try { const db = await this.open(); await new Promise(res => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) { } }
+};
+
+/* ---------- GitHub ---------- */
+async function ghRead(path) {
+  const r = await fetch(`${API}/contents/${path}?t=${Date.now()}`, { headers: hdr('application/vnd.github.raw+json'), cache: 'no-store' });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(path + ' পড়া যায়নি (' + r.status + ')');
+  return JSON.parse(await r.text());
+}
+async function ghPut(path, obj, msg) {
+  let sha; const g = await fetch(`${API}/contents/${path}?t=${Date.now()}`, { headers: hdr(), cache: 'no-store' });
+  if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error(path + ' পড়া যায়নি');
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  const p = await fetch(`${API}/contents/${path}`, { method: 'PUT', headers: { ...hdr(), 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, content, sha }) });
+  const j = await p.json(); if (!p.ok) throw new Error((j.message || 'Publish failed') + ' (' + path + ')');
+}
+
+/* ---------- সাইন ইন ---------- */
+if (store('gt')) { $('#tk').value = store('gt'); $('#rem').checked = true; }
+$('#con').onclick = async () => {
+  $('#m1').textContent = '';
+  try {
+    const r = await fetch(API, { headers: hdr() }); const j = await r.json();
+    if (!r.ok) throw new Error(j.message || 'সাইন ইন হয়নি');
+    if (!(j.permissions && j.permissions.push)) throw new Error('এই টোকেন দিয়ে রিপোজিটরিতে লেখা যাবে না। Contents: Read and write অনুমতি দিন।');
+    if ($('#rem').checked) store('gt', tk()); else store('gt', null);
+    try { sessionStorage.setItem('gcd_admin', '1'); } catch (e) { }
+    IDX = (await ghRead('data/index.json')) || { months: [], latest: '' };
+    IDX.months = IDX.months || [];
+    $('#main').hidden = false; $('#nav').hidden = false; $('#s1').hidden = true;
+    monthOptions();
+    await loadMonth($('#mon').value);
+  } catch (e) { $('#m1').className = 'bad'; $('#m1').textContent = e.message; }
+};
+
+/* ---------- মাস ---------- */
+function monthOptions() {
+  const cur = E.ym(E.addDays(E.today(), -1));
+  const set = new Set(IDX.months);
+  let m = E.ym(E.today()); for (let i = 0; i < 13; i++) { set.add(m); m = E.prevMonth(m); }
+  const list = [...set].sort().reverse();
+  $('#mon').innerHTML = list.map(x => `<option value="${x}" ${x === cur ? 'selected' : ''}>${monLabel(x)}${IDX.months.includes(x) ? ' · প্রকাশিত' : ''}</option>`).join('');
+  $('#mon').dataset.v = cur;
+}
+$('#mon').onchange = async e => {
+  if (dirty() && !confirm('এই মাসের পরিবর্তন এখনও প্রকাশ করা হয়নি। তবুও মাস বদলাবেন?')) { e.target.value = e.target.dataset.v; return; }
+  e.target.dataset.v = e.target.value;
+  await loadMonth(e.target.value);
+};
+async function loadMonth(m) {
+  $('#mst').textContent = 'লোড হচ্ছে…';
+  S = E.newState(m); jobs = [];
+  try {
+    const W = await ghRead(`data/${m}.json`);
+    S.W = E.fixW(W, m);
+    if (!W && IDX.latest && IDX.latest !== m) { const L = await ghRead(`data/${IDX.latest}.json`).catch(() => null); if (L && L.cfg) S.W.cfg = JSON.parse(JSON.stringify(L.cfg)); }
+    const am = await ghRead(`data/${m}-agentmap.json`).catch(() => null);
+    if (am && am.m) { S.AM = new Map(Object.entries(am.m)); S.amDate = am.date || ''; }
+    const sv = await ghRead(`data/${m}-service.json`).catch(() => null);
+    if (sv) S.svc = sv;
+    if (Array.isArray(IDX.criteria) && IDX.criteria.length) S.crit = JSON.parse(JSON.stringify(IDX.criteria));
+    const src = await IDB.get('src:' + m);
+    if (src) { S.src = src; S.fields = E.agents(S).fields; }
+    S.dirty = { data: false, am: false, svc: false }; idxDirty = false;
+    $('#mst').innerHTML = W ? `<span class="ok">${monLabel(m)}-এর প্রকাশিত ডেটা লোড হয়েছে:</span> TRX Till ${esc(S.W.tills.dtr || '—')} · ${S.W.ra.length} জন ডিএসও · ${S.W.dh.length}টি ডিএইচ।${src ? ' এই কম্পিউটারে এজেন্ট-ভিত্তিক রিপোর্টও আছে।' : ''}` : `<span class="warn">${monLabel(m)}-এর কোনো ডেটা এখনও প্রকাশ হয়নি।</span> প্রথমে এই মাসের RA-DSS টার্গেট ফাইল দিন।`;
+  } catch (e) { $('#mst').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
+  renderAll();
+}
+const dirty = () => S && (S.dirty.data || S.dirty.am || S.dirty.svc || idxDirty);
+
+/* ---------- ফাইল ড্রপ ---------- */
+const drop = $('#drop'), fin = $('#file');
+drop.onclick = () => fin.click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fin.click(); } };
+['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => handle([...e.dataTransfer.files]));
+fin.onchange = () => { handle([...fin.files]); fin.value = ''; };
+
+async function handle(files) {
+  if (!files.length || !S) return;
+  const batch = [];
+  for (const f of files) {
+    const ph = { id: ++jid, name: f.name, lines: [['n', 'পড়া হচ্ছে… অপেক্ষা করুন।']], state: '' };
+    jobs.unshift(ph); renderFiles();
+    try { const j = E.read(await f.arrayBuffer(), f.name); Object.assign(ph, j, { id: ph.id }); batch.push(ph); }
+    catch (e) { ph.lines = [['bad', 'ফাইল পড়া যায়নি: ' + e.message]]; ph.state = 'err'; }
+    renderFiles();
+  }
+  E.classify(S, batch);
+  for (const j of batch) { await E.run(S, j); renderFiles(); }
+  await IDB.set('src:' + S.month, S.src);
+  renderAll();
+}
+async function rerun(j) {
+  await E.run(S, j);
+  await IDB.set('src:' + S.month, S.src);
+  renderAll();
+}
+
+/* ---------- স্ক্রিন ---------- */
+const li = ([c, t]) => `<li>${c === 'n' ? '<span class="mut">ℹ️</span>' : `<span class="${c}">${c === 'ok' ? 'ঠিক আছে' : c === 'warn' ? 'সতর্কতা' : 'সমস্যা'}:</span>`} ${esc(t)}</li>`;
+const TYPE_OPTS = [['', 'নিজে চিনুক'], ...E.SLOTS.map(s => [s.id, s.label])];
+function renderAll() { renderFiles(); renderSlots(); renderCfg(); renderCrit(); finish(); }
+function finish() { const ok = !!(S && S.W.ra.length); $('#pub').disabled = !ok; $('#dl').disabled = !ok; }
+function renderFiles() {
+  $('#files').innerHTML = jobs.map(j => {
+    const slot = E.SLOTS.find(s => s.id === j.slot);
+    const lab = slot ? slot.label : j.slot === 'dtrold' ? 'পুরোনো TRX রিপোর্ট' : j.slot === 'badmonth' ? 'অন্য মাসের TRX রিপোর্ট' : 'চেনা যায়নি';
+    return `<div class="rc ${j.state || ''}" data-j="${j.id}"><h3>${esc(j.name)}</h3>
+    <div class="mut">চেনা গেছে: <b>${esc(lab)}</b>${j.date ? ' · রিপোর্টের তারিখ ' + esc(j.date) : ''}</div>
+    ${j.wb ? `<div class="row"><div><label>ধরন বদলান</label><select class="ty">${TYPE_OPTS.map(([v, l]) => `<option value="${v}" ${(j.forced || '') === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+    <div><label>ডেটা Till তারিখ</label><input type="date" class="tl" value="${esc(j.till || '')}" ${slot && slot.id !== 'target' ? '' : 'disabled'}></div></div>` : ''}
+    <ul class="ln">${(j.lines || []).map(li).join('')}</ul></div>`;
+  }).join('');
+  document.querySelectorAll('#files .rc').forEach(el => {
+    const j = jobs.find(x => x.id == el.dataset.j); if (!j || !j.wb) return;
+    el.querySelector('.tl').onchange = e => { j.till = e.target.value; if (j.slot && j.till) { S.W.tills[j.slot] = j.till; S.dirty.data = true; if (S.svc && ['dtr', 'r78', 'b2bid'].includes(j.slot)) E.computeService(S); renderSlots(); finish(); } };
+    el.querySelector('.ty').onchange = async e => {
+      j.forced = e.target.value;
+      if (!j.forced) { j.det = E.detect(j.wb); j.type = j.det.type; E.classify(S, [j]); }
+      await rerun(j);
+    };
+  });
+}
+function renderSlots() {
+  if (!S) return;
+  const T = S.W.tills, main = T.dtr || '';
+  const day = s => Math.round((new Date(main + 'T00:00:00Z') - new Date(s + 'T00:00:00Z')) / 864e5);
+  $('#slots').innerHTML = '<tr><th>রিপোর্ট</th><th>কখন দেবেন</th><th>ডেটা Till</th><th>অবস্থা</th></tr>' + E.SLOTS.map(s => {
+    const t = s.id === 'target' ? (S.W.ra.length ? 'loaded' : '') : (T[s.id] || '');
+    let b = '<span class="b n">এখনও নেই</span>';
+    if (t) {
+      if (s.id === 'target' || s.id === 'lmdtr' || s.svc || !main) b = '<span class="b g">✓ আছে</span>';
+      else { const d = day(t); b = d <= 0 ? '<span class="b g">✓ সর্বশেষ</span>' : `<span class="b y">${d} দিন আগের</span>`; }
+    }
+    return `<tr><td>${esc(s.label)}</td><td class="mut">${esc(s.freq)}</td><td>${esc(s.id === 'target' ? '' : T[s.id] || '')}</td><td>${b}</td></tr>`;
+  }).join('');
+}
+function renderCfg() {
+  if (!S) return;
+  $('#savCnt').value = S.W.cfg.savCnt != null ? S.W.cfg.savCnt : 10;
+  $('#d2cIn').innerHTML = S.W.dh.map(d => `<div><label>${esc(d.name)}</label><input type="number" min="0" class="d2c" data-n="${esc(d.name)}" value="${S.W.cfg.d2c[d.name] || ''}" placeholder="যেমন 5000000"></div>`).join('') || '<div class="mut">টার্গেট ফাইল দিলে ডিএইচ তালিকা আসবে।</div>';
+  document.querySelectorAll('.d2c').forEach(i => i.onchange = () => { S.W.cfg.d2c[i.dataset.n] = +i.value || 0; E.aggregate(S); S.dirty.data = true; });
+}
+$('#savCnt').onchange = e => { S.W.cfg.savCnt = +e.target.value || 0; if (S.W.ra.length) E.aggregate(S); S.dirty.data = true; };
+
+/* ---------- প্রকাশ ---------- */
+function bundle() {
+  const m = S.month, out = [];
+  out.push([`data/${m}.json`, E.finalize(S)]);
+  if (S.svc) out.push([`data/${m}-service.json`, S.svc]);
+  if (S.dirty.am && S.AM.size) out.push([`data/${m}-agentmap.json`, { v: 1, date: S.amDate, m: Object.fromEntries(S.AM) }]);
+  const months = [...new Set([...(IDX.months || []), m])].sort().reverse();
+  IDX = Object.assign({}, IDX, { v: 1, months, latest: months[0], criteria: S.crit, updated: new Date().toISOString() });
+  out.push(['data/index.json', IDX]);
+  return out;
+}
+$('#pub').onclick = async () => {
+  const m = $('#msg'); m.className = ''; m.textContent = 'প্রকাশ হচ্ছে…'; $('#pub').disabled = true;
+  try {
+    for (const [p, o] of bundle()) { m.textContent = 'প্রকাশ হচ্ছে… ' + p; await ghPut(p, o, `Update ${p} (${S.W.tills.dtr || S.month})`); }
+    S.dirty = { data: false, am: false, svc: false }; idxDirty = false;
+    monthOptions(); $('#mon').value = S.month; $('#mon').dataset.v = S.month;
+    m.className = 'ok'; m.textContent = `প্রকাশ হয়েছে (${monLabel(S.month)})! এক-দুই মিনিটে সাইট আপডেট হবে।`;
+  } catch (e) {
+    m.className = 'bad';
+    m.textContent = (/not accessible|Forbidden|Bad credentials|Not Found|Resource/i.test(e.message) ? 'টোকেনটি এই রিপোজিটরিতে লিখতে পারছে না। GitHub-এ টোকেনের Repository access-এ ' + REPO + ' বেছে নিন এবং Contents = Read and write দিন। ' : e.message + ' ') + 'বিকল্প: ফাইলগুলো ডাউনলোড করে GitHub-এর data ফোল্ডারে আপলোড করুন।';
+  }
+  $('#pub').disabled = false;
+};
+$('#dl').onclick = () => {
+  bundle().forEach(([p, o], i) => setTimeout(() => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(o)], { type: 'application/json' })); a.download = p.split('/').pop(); a.click(); }, i * 400));
+  $('#msg').className = 'mut'; $('#msg').textContent = 'ডাউনলোড হওয়া ফাইলগুলো GitHub রিপোজিটরির data ফোল্ডারে আপলোড করুন।';
+};
+addEventListener('beforeunload', e => { if (dirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+/* =====================================================================
+   মার্কেট সার্ভিস ক্রাইটেরিয়া
+   ===================================================================== */
+let editing = null;
+function fieldList() {
+  const f = (S && S.fields && S.fields.length) ? S.fields : Object.keys(E.CALC).map(k => ({ f: k, vals: [] })).concat(['DTR:CATEGORY CODE', 'DTR:AGENT STATUS', 'DTR:Agent Categoy', 'DTR:CI AMT', 'DTR:CO AMT', 'DTR:MTD CI AMT', 'DTR:MTD CO AMT', 'DTR:B2B RECV AMT', 'DTR:B2B SEND AMT', 'DTR:WALLET BALANCE', 'DTR:MTD TRX ACTIVE DAY'].map(k => ({ f: k, vals: [] })));
+  return f;
+}
+function renderCrit() {
+  if (!S) return;
+  const tot = (S.svc && S.svc.tot) || {};
+  const pv = c => { if (!S.svc) return '—'; if (c.kind === 'pct') { const d = tot[c.den] || 0; return d ? (Math.round((tot[c.num] || 0) / d * 1000) / 10) + '%' : '—'; } return E.fmt(tot[c.id] || 0); };
+  $('#clist').innerHTML = '<tr><th>#</th><th>নাম ও শর্ত</th><th>টেরিটরি মোট</th><th>দেখাবে</th><th></th></tr>' + S.crit.map((c, i) => `<tr>
+    <td>${i + 1}</td><td><b>${esc(c.name)}</b><div class="tiny">${esc(E.describe(c, S.crit))}</div></td><td>${pv(c)}</td>
+    <td><input type="checkbox" data-show="${i}" ${c.show !== false ? 'checked' : ''} style="width:auto;min-height:0" aria-label="দেখাবে"></td>
+    <td style="white-space:nowrap"><button class="ghost sm" data-ed="${i}" type="button">সম্পাদনা</button> <button class="ghost sm" data-up="${i}" type="button" aria-label="ওপরে">↑</button> <button class="ghost sm" data-dn="${i}" type="button" aria-label="নিচে">↓</button> <button class="ghost sm" data-del="${i}" type="button">মুছুন</button></td></tr>`).join('');
+  $('#cmsg').innerHTML = S.src && S.src.dtr ? `এই কম্পিউটারে ${esc(S.src.dtr.date || '')}-এর TRX রিপোর্ট আছে — ক্রাইটেরিয়া বদলালে সঙ্গে সঙ্গে আবার হিসাব হবে।` : '<span class="warn">এই কম্পিউটারে এই মাসের TRX রিপোর্ট নেই। ক্রাইটেরিয়া বদলানোর পর হিসাবের জন্য সর্বশেষ TRX রিপোর্ট (এবং দরকারি অন্য রিপোর্ট) আবার আপলোড করুন।</span>';
+  $('#flist').innerHTML = fieldList().map(f => `<option value="${esc(f.f)}">`).join('');
+  const changed = () => { idxDirty = true; if (S.src && Object.keys(S.src).length) E.computeService(S); renderCrit(); };
+  document.querySelectorAll('[data-show]').forEach(b => b.onchange = () => { S.crit[+b.dataset.show].show = b.checked; changed(); });
+  document.querySelectorAll('[data-up]').forEach(b => b.onclick = () => { const i = +b.dataset.up; if (i > 0) { [S.crit[i - 1], S.crit[i]] = [S.crit[i], S.crit[i - 1]]; changed(); } });
+  document.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => { const i = +b.dataset.dn; if (i < S.crit.length - 1) { [S.crit[i + 1], S.crit[i]] = [S.crit[i], S.crit[i + 1]]; changed(); } });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const c = S.crit[+b.dataset.del];
+    if (S.crit.some(x => x.kind === 'pct' && (x.num === c.id || x.den === c.id))) { alert('এই ক্রাইটেরিয়া একটি শতাংশ ক্রাইটেরিয়াতে ব্যবহৃত হচ্ছে — আগে সেটি মুছুন বা বদলান।'); return; }
+    if (confirm(`"${c.name}" মুছে ফেলবেন?`)) { S.crit.splice(+b.dataset.del, 1); changed(); }
+  });
+  document.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => openEd(+b.dataset.ed));
+  window._critChanged = changed;
+}
+$('#cadd').onclick = () => openEd(-1);
+$('#cdef').onclick = () => { if (confirm('সব ক্রাইটেরিয়া ডিফল্টে ফিরবে। নিশ্চিত?')) { S.crit = E.defaultCrit(); window._critChanged(); } };
+$('#ccan').onclick = () => { $('#ced').hidden = true; editing = null; };
+$('#ck').onchange = kindUI;
+$('#cplus').onclick = () => addCond({ f: '', op: '=', v: '' });
+function kindUI() {
+  const k = $('#ck').value;
+  $('#cCondBox').hidden = k === 'pct'; $('#cSumBox').hidden = k !== 'sum'; $('#cPctBox').hidden = k !== 'pct';
+}
+function addCond(c) {
+  const d = document.createElement('div'); d.className = 'cond';
+  d.innerHTML = `<input class="cfi" list="flist" placeholder="ফিল্ড, যেমন DTR:AGENT STATUS" value="${esc(c.f)}" aria-label="ফিল্ড">
+    <select class="co" aria-label="শর্ত">${E.OPS.map(([v, l]) => `<option value="${v}" ${v === c.op ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+    <input class="cv" list="vlist" placeholder="মান" value="${esc(c.v)}" aria-label="মান">
+    <button type="button" class="ghost sm" aria-label="শর্ত মুছুন">✕</button>`;
+  d.querySelector('button').onclick = () => d.remove();
+  d.querySelector('.cv').onfocus = () => { const f = fieldList().find(x => x.f === d.querySelector('.cfi').value); $('#vlist').innerHTML = (f ? f.vals : []).map(v => `<option value="${esc(v)}">`).join(''); };
+  $('#conds').appendChild(d);
+}
+function openEd(i) {
+  editing = i;
+  const c = i >= 0 ? S.crit[i] : { name: '', kind: 'count', conds: [{ f: 'DTR:CATEGORY CODE', op: 'in', v: '1,17' }, { f: 'DTR:AGENT STATUS', op: '=', v: 'ACTIVE' }] };
+  $('#cedT').textContent = i >= 0 ? 'ক্রাইটেরিয়া সম্পাদনা' : 'নতুন ক্রাইটেরিয়া';
+  $('#cn').value = c.name; $('#ck').value = c.kind; $('#csf').value = c.sumField || '';
+  const base = S.crit.filter(x => x.kind !== 'pct' && x !== S.crit[i]);
+  const opts = sel => base.map(x => `<option value="${esc(x.id)}" ${x.id === sel ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
+  $('#cnum').innerHTML = opts(c.num); $('#cden').innerHTML = opts(c.den);
+  $('#conds').innerHTML = ''; (c.conds || []).forEach(addCond);
+  $('#cerr').textContent = ''; kindUI(); $('#ced').hidden = false; $('#cn').focus();
+}
+$('#csave').onclick = () => {
+  const name = $('#cn').value.trim(), kind = $('#ck').value;
+  if (!name) { $('#cerr').textContent = 'নাম দিন।'; return; }
+  const c = editing >= 0 ? S.crit[editing] : { id: 'c' + Date.now().toString(36), show: true };
+  c.name = name; c.kind = kind;
+  if (kind === 'pct') {
+    c.num = $('#cnum').value; c.den = $('#cden').value; delete c.conds; delete c.sumField;
+    if (!c.num || !c.den) { $('#cerr').textContent = 'লব ও হর বেছে নিন।'; return; }
+  } else {
+    c.conds = [...document.querySelectorAll('#conds .cond')].map(d => ({ f: d.querySelector('.cfi').value.trim(), op: d.querySelector('.co').value, v: d.querySelector('.cv').value.trim() })).filter(x => x.f);
+    if (kind === 'sum') { c.sumField = $('#csf').value.trim(); if (!c.sumField) { $('#cerr').textContent = 'কোন ফিল্ডের যোগফল, সেটি দিন।'; return; } } else delete c.sumField;
+    delete c.num; delete c.den;
+  }
+  if (editing < 0) S.crit.push(c);
+  $('#ced').hidden = true; editing = null;
+  window._critChanged();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Market Service · গাজীপুর সেন্ট্রাল</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<section id="gate" class="gate">
+  <div class="hero" style="flex-direction:column;align-items:flex-start;gap:14px">
+    <div class="badge"><img src="logo.jpg" alt="Achievers’ Club" style="height:80px"></div>
+    <div><h1>🛠️ Market Service</h1><p>গাজীপুর সেন্ট্রাল · শুধু অপারেশন ম্যানেজার ও অ্যাডমিন</p></div>
+  </div>
+  <form id="f" class="panel">
+    <label for="w">MA ওয়ালেট নম্বর (অপারেশন ম্যানেজার)</label>
+    <input id="w" inputmode="numeric" autocomplete="off" placeholder="01XXXXXXXXX">
+    <div class="err" id="e" role="alert"></div>
+    <button type="submit" style="width:100%">Market Service দেখুন</button>
+  </form>
+  <p class="mut"><a href="index.html" style="color:var(--pink)">← Achievers’ Club</a> · <a href="admin.html" style="color:var(--pink)">অ্যাডমিন সাইন ইন</a></p>
+</section>
+
+<section id="app" hidden>
+  <div id="hdr"></div>
+  <div class="panel filters">
+    <div><label for="fdh">🏢 ডিএইচ</label><select id="fdh"></select></div>
+    <div><label for="fdss">👥 ডিএসএস</label><select id="fdss"></select></div>
+    <div style="flex:0 0 auto"><button class="ghost" id="xl" type="button">⬇️ Excel ডাউনলোড</button></div>
+  </div>
+  <div class="panel">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <h2 id="ttl">📋 মার্কেট সার্ভিস</h2>
+      <div class="seg" role="group" aria-label="রিপোর্টের স্তর"><button type="button" data-l="dh">ডিএইচ</button><button type="button" data-l="dss">ডিএসএস</button><button type="button" data-l="dso" class="on">ডিএসও</button></div>
+    </div>
+    <div class="mut" id="sub" style="margin:4px 0 10px"></div>
+    <div class="scroll"><table id="tb"></table></div>
+  </div>
+  <div class="panel"><h2>ℹ️ কোন সংখ্যা কীভাবে</h2><div id="leg" class="mut"></div></div>
+</section>
+</div>
+<script src="assets/core.js"></script>
+<script>
+const {$, esc, tc} = GC;
+let IDX, D, SV, who, level = 'dso', view = { cols: [], rows: [] };
+
+(async function init() {
+  IDX = await GC.loadIndex();
+  if (!IDX.months.length) { $('#e').textContent = 'এখনও কোনো ডেটা প্রকাশ হয়নি।'; return; }
+  await load(GC.pickMonth(IDX));
+  const admin = await GC.adminCheck();
+  who = GC.resolve(D, GC.session(), admin);
+  if (who && (who.role === 'om' || who.role === 'admin')) start();
+  else if (who) $('#e').textContent = 'Market Service শুধু অপারেশন ম্যানেজার (MA ওয়ালেট) ও অ্যাডমিনের জন্য।';
+})();
+async function load(m) {
+  D = await GC.loadMonth(m);
+  SV = await GC.getJSON(`data/${m}-service.json`);
+}
+$('#f').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!D) return;
+  const s = GC.identify(D, $('#w').value);
+  if (!s) { $('#e').textContent = 'ওয়ালেট নম্বরটি পাওয়া যায়নি।'; return; }
+  if (s.role !== 'om') { $('#e').textContent = 'এটি ডিএসও ওয়ালেট। Market Service শুধু অপারেশন ম্যানেজারের MA ওয়ালেট দিয়ে দেখা যায়।'; return; }
+  GC.setSession(s); who = GC.resolve(D, s, false); start();
+});
+async function onMonth(m) { await load(m); who = GC.resolve(D, GC.session(), GC.ss('gcd_admin') === '1'); start(); }
+
+function start() {
+  $('#gate').hidden = true; $('#app').hidden = false;
+  GC.header({ IDX, D, who, page: 'ms', title: 'Market Service', till: SV && SV.till, onMonth });
+  const dhs = D.dh.map(d => d.name);
+  $('#fdh').innerHTML = '<option value="">সব ডিএইচ</option>' + dhs.map(d => `<option value="${esc(d)}" ${who.myDH && who.myDH.name === d ? 'selected' : ''}>${esc(d)}</option>`).join('');
+  $('#fdh').onchange = () => { dssOpts(); draw(); }; $('#fdss').onchange = draw;
+  document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { level = b.dataset.l; document.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  dssOpts(); draw();
+}
+function dssOpts() {
+  const d = $('#fdh').value;
+  $('#fdss').innerHTML = '<option value="">সব ডিএসএস</option>' + D.teams.filter(t => !d || t.dh === d).map(t => `<option value="${esc(t.dh + '\u0001' + t.dss)}">${esc(tc(t.dss))}${d ? '' : ' · ' + esc(t.dh)}</option>`).join('');
+}
+
+/* ---------- হিসাব ---------- */
+const crit = () => SV.crit.filter(c => c.show !== false);
+function add(a, b) { for (const k in b || {}) a[k] = (a[k] || 0) + (b[k] || 0); return a; }
+function val(raw, c) {
+  if (c.kind === 'pct') { const n = raw[c.num] || 0, d = raw[c.den] || 0; return d ? n / d * 100 : null; }
+  return raw[c.id] || 0;
+}
+const cell = (v, c) => c.kind === 'pct' ? (v == null ? '—' : (Math.round(v * 10) / 10) + '%') : GC.nf(v);
+const raDSO = x => (SV.rows || {})[x.wallet] || {};
+const rawDSS = t => D.ra.filter(x => x.dh === t.dh && x.dss === t.dss).reduce((a, x) => add(a, raDSO(x)), {});
+const rawDH = d => add(D.teams.filter(t => t.dh === d.name).reduce((a, t) => add(a, rawDSS(t)), {}), (SV.un || {})[d.name]);
+
+function draw() {
+  if (!SV) { $('#tb').innerHTML = ''; $('#sub').textContent = `${GC.monLabel(D.month)}-এর মার্কেট সার্ভিস ডেটা এখনও প্রকাশ হয়নি। অ্যাডমিন TRX রিপোর্ট আপলোড করে প্রকাশ করলে দেখা যাবে।`; $('#leg').textContent = ''; return; }
+  const C = crit();
+  const d = $('#fdh').value, [sd, ss] = ($('#fdss').value || '').split('\u0001'), ed = d || sd || '';
+  const my = who.myDH ? who.myDH.name : '';
+  let lead = [], rows = [], tot = {};
+  if (level === 'dh') {
+    lead = ['ডিএইচ'];
+    D.dh.filter(x => !ed || x.name === ed).forEach(x => { const r = rawDH(x); add(tot, r); rows.push({ k: [x.name], r, mine: x.name === my }); });
+  } else if (level === 'dss') {
+    lead = ['ডিএসএস', 'ডিএইচ'];
+    D.teams.filter(t => (!ed || t.dh === ed) && (!ss || t.dss === ss)).forEach(t => { const r = rawDSS(t); add(tot, r); rows.push({ k: [tc(t.dss), t.dh], r, mine: t.dh === my }); });
+    if (!ss) D.dh.filter(x => (!ed || x.name === ed) && SV.un && SV.un[x.name]).forEach(x => { rows.push({ k: ['অনির্ধারিত আরএ', x.name], r: SV.un[x.name], muted: true }); add(tot, SV.un[x.name]); });
+  } else {
+    lead = ['ডিএসও', 'ডিএসএস', 'ডিএইচ'];
+    D.ra.filter(x => (!ed || x.dh === ed) && (!ss || x.dss === ss)).sort((a, b) => a.dh.localeCompare(b.dh) || a.dss.localeCompare(b.dss) || a.name.localeCompare(b.name))
+      .forEach(x => { const r = raDSO(x); add(tot, r); rows.push({ k: [tc(x.name), tc(x.dss), x.dh], r, mine: x.dh === my, w: x.wallet }); });
+  }
+  const label = { dh: 'ডিএইচ', dss: 'ডিএসএস', dso: 'ডিএসও' }[level];
+  $('#ttl').textContent = `📋 ${label}-ভিত্তিক মার্কেট সার্ভিস`;
+  $('#sub').textContent = `${GC.monLabel(D.month)} · TRX রিপোর্ট Till ${GC.fmtTill(SV.till)} · মোট ${GC.nf(SV.agents)}টি এজেন্ট বিশ্লেষণ করা হয়েছে`;
+  let h = GC.head([...lead, ...C.map(c => esc(c.name))], lead.length);
+  rows.forEach(x => h += `<tr class="${x.mine && level !== 'dso' ? 'mine' : ''}" ${x.muted ? 'style="opacity:.75"' : ''}>${x.k.map((v, i) => `<td class="l">${i ? `<small>${esc(v)}</small>` : esc(v)}</td>`).join('')}${C.map(c => `<td>${cell(val(x.r, c), c)}</td>`).join('')}</tr>`);
+  h += `<tr class="tot"><td class="l" colspan="${lead.length}">মোট${ed ? ' · ' + esc(ss ? tc(ss) : ed) : ' · গাজীপুর সেন্ট্রাল'}</td>${C.map(c => `<td>${cell(val(tot, c), c)}</td>`).join('')}</tr>`;
+  $('#tb').innerHTML = h;
+  view = { lead, C, rows, tot };
+  $('#leg').innerHTML = '<ul style="padding-left:18px;margin:0">' + C.map(c => `<li><b>${esc(c.name)}:</b> ${esc(describe(c))}</li>`).join('') + '</ul><p>এজেন্টের আরএ ধরা হয়েছে সর্বশেষ TRX রিপোর্ট থেকে। টার্গেট ফাইলে নেই এমন আরএ-র এজেন্ট “অনির্ধারিত আরএ” হিসেবে ডিএইচ-এর মোটে যোগ হয়।</p>';
+}
+const OPN = { '=': '=', '!=': '≠', '>': '>', '>=': '≥', '<': '<', '<=': '≤', in: 'এর যেকোনো একটি', notin: 'এর কোনোটিই নয়', contains: 'ধারণ করে', empty: 'খালি', notempty: 'খালি নয়' };
+function describe(c) {
+  if (c.kind === 'pct') { const n = SV.crit.find(x => x.id === c.num), d = SV.crit.find(x => x.id === c.den); return `${n ? n.name : c.num} ÷ ${d ? d.name : c.den} × 100`; }
+  const cs = (c.conds || []).map(x => `${x.f} ${OPN[x.op] || x.op}${['empty', 'notempty'].includes(x.op) ? '' : ' ' + x.v}`).join(' এবং ');
+  return (c.kind === 'sum' ? `যোগফল: ${c.sumField}` : 'এজেন্ট সংখ্যা') + (cs ? ` — যেখানে ${cs}` : '');
+}
+/* ---------- Excel ---------- */
+$('#xl').onclick = () => {
+  const go = () => {
+    const aoa = [[...view.lead, ...view.C.map(c => c.name)]];
+    view.rows.forEach(x => aoa.push([...x.k, ...view.C.map(c => { const v = val(x.r, c); return v == null ? '' : c.kind === 'pct' ? Math.round(v * 10) / 10 : v; })]));
+    aoa.push(['মোট', ...Array(view.lead.length - 1).fill(''), ...view.C.map(c => { const v = val(view.tot, c); return v == null ? '' : c.kind === 'pct' ? Math.round(v * 10) / 10 : v; })]);
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Market Service');
+    XLSX.writeFile(wb, `Market_Service_${level.toUpperCase()}_${SV.till || D.month}.xlsx`);
+  };
+  if (window.XLSX) return go();
+  const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = go; document.head.appendChild(s);
+};
+</script>
+</body>
+</html>

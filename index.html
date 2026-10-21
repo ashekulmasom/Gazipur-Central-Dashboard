@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Achievers’ Club · গাজীপুর সেন্ট্রাল</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<section id="gate" class="gate">
+  <div class="hero" style="flex-direction:column;align-items:flex-start;gap:14px">
+    <span class="sp" style="top:12px;right:22px">✦</span><span class="sp" style="top:60px;right:70px;animation-delay:.8s;font-size:14px">✦</span><span class="sp" style="bottom:16px;right:30px;animation-delay:1.4s">★</span>
+    <div class="badge"><img src="logo.jpg" alt="Achievers’ Club" style="height:96px"></div>
+    <div><h1>চলুন, শীর্ষে পৌঁছাই! 🏆</h1><p>গাজীপুর সেন্ট্রাল · আপনার র‍্যাঙ্ক দেখুন</p></div>
+  </div>
+  <form id="f" class="panel">
+    <label for="w" id="wl">ওয়ালেট নম্বর</label>
+    <input id="w" inputmode="numeric" autocomplete="off" placeholder="01XXXXXXXXX">
+    <div class="mut" id="wh" style="margin-top:6px">ডিএসও: আপনার আরএ (DSO) ওয়ালেট · অপারেশন ম্যানেজার: ডিস্ট্রিবিউটরের MA ওয়ালেট</div>
+    <div class="err" id="e" role="alert"></div>
+    <button type="submit" style="width:100%">লিডারবোর্ড দেখুন 🚀</button>
+  </form>
+  <p class="mut">ওয়ালেট নম্বর চিনতে পারছি না? আপনার ডিএসএস বা টেরিটরি ম্যানেজারের সাথে যোগাযোগ করুন। · <a href="admin.html" style="color:var(--pink)">অ্যাডমিন সাইন ইন</a></p>
+</section>
+
+<section id="app" hidden>
+  <div id="hdr"></div>
+  <div id="main">
+    <div class="cards" id="cards"></div>
+    <div class="panel filters">
+      <div><label for="fdh">🏢 ডিএইচ (ডিস্ট্রিবিউটর)</label><select id="fdh"></select></div>
+      <div><label for="fdss">👥 ডিএসএস</label><select id="fdss"></select></div>
+      <div style="flex:0 0 auto"><button class="ghost" id="rs" type="button">ফিল্টার রিসেট</button></div>
+    </div>
+    <div class="panel"><h2>📊 অপারেশন ম্যানেজার স্কোর</h2><div class="mut" style="margin-bottom:10px">ওএম-এর A2M-এর বদলে BZP (A2M + D2C) টার্গেট। বিস্তারিত দেখতে সারিতে ক্লিক করুন।</div><div class="scroll"><table id="tdh"></table></div></div>
+    <div class="panel"><h2>⚡ ডিএসএস পারফরম্যান্স</h2><div class="mut" style="margin-bottom:10px">সব ডিএসএস একসাথে, ওজন অনুযায়ী স্কোরে র‍্যাঙ্ক (ডিএইচ আলাদা নয়)। বিস্তারিত দেখতে সারিতে ক্লিক করুন।</div><div id="tt"></div></div>
+    <div class="panel"><h2>🏅 ডিএসও লিডারবোর্ড</h2><div class="mut">প্রতিটি ডিএইচ-এর ভেতরে স্কোর অনুযায়ী র‍্যাঙ্ক। সবুজ = টার্গেট বা তার বেশি; বাদামী = টার্গেটের অর্ধেকের কম। আপনার সারি গোলাপি দাগে চিহ্নিত। বিস্তারিত দেখতে সারিতে ক্লিক করুন।</div><div id="tr"></div></div>
+  </div>
+  <div id="detail" hidden></div>
+</section>
+</div>
+<script src="assets/core.js"></script>
+<script>
+const {$, esc, tc, MED, LV} = GC;
+let IDX = null, D = null, who = null;
+const asOM = new URLSearchParams(location.search).get('as') === 'om';
+if (asOM) { $('#wl').textContent = 'MA ওয়ালেট নম্বর (অপারেশন ম্যানেজার)'; }
+
+(async function init() {
+  IDX = await GC.loadIndex();
+  if (!IDX.months.length) { $('#e').textContent = 'এখনও কোনো ডেটা প্রকাশ হয়নি।'; return; }
+  D = await GC.loadMonth(GC.pickMonth(IDX));
+  if (!D) { $('#e').textContent = 'ডেটা লোড করা যায়নি। একটু পরে আবার চেষ্টা করুন।'; return; }
+  const admin = await GC.adminCheck();
+  who = GC.resolve(D, GC.session(), admin);
+  if (who) start();
+})();
+$('#f').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!D) { $('#e').textContent = 'ডেটা লোড হচ্ছে, আবার চেষ্টা করুন।'; return; }
+  const s = GC.identify(D, $('#w').value);
+  if (!s) { $('#e').textContent = 'ওয়ালেট নম্বরটি পাওয়া যায়নি। আবার দেখুন।'; return; }
+  GC.setSession(s);
+  who = GC.resolve(D, s, false);
+  start(true);
+});
+async function onMonth(m) {
+  const nd = await GC.loadMonth(m); if (!nd) return;
+  D = nd; who = GC.resolve(D, GC.session(), GC.ss('gcd_admin') === '1'); start();
+}
+function start(fresh) {
+  $('#gate').hidden = true; $('#app').hidden = false;
+  GC.header({ IDX, D, who, page: 'ac', title: 'গাজীপুর সেন্ট্রাল লিডারবোর্ড', onMonth });
+  setup(); route();
+  if (fresh && who.me) GC.confetti(who.me.dhRank <= 3 ? 90 : 45);
+}
+
+/* ---------- লিংক ---------- */
+const hDSO = x => `#/d/dso/${encodeURIComponent(x.wallet)}`;
+const hDSS = x => `#/d/dss/${encodeURIComponent(x.dh)}/${encodeURIComponent(x.dss)}`;
+const hOM = n => `#/d/om/${encodeURIComponent(n)}`;
+
+function setup() {
+  const me = who.me, my = who.myDH;
+  const c = (ic, k, v, s, cls, extra, href) => `<${href ? `a href="${href}"` : 'div'} class="card ${cls || ''}"><div class="ic">${ic}</div><div class="mut">${k}</div><b>${v}</b><div class="mut">${s}</div>${extra || ''}</${href ? 'a' : 'div'}>`;
+  let h = '';
+  if (me) {
+    const list = D.ra.filter(x => x.dh === me.dh).sort((a, b) => a.dhRank - b.dhRank);
+    let m;
+    if (me.dhRank === 1) m = '🏆 অভিনন্দন! আপনি আপনার ডিএইচ-এ এক নম্বরে!';
+    else if (me.dhRank <= 3) m = MED[me.dhRank - 1] + ' আপনি শীর্ষ ৩-এ আছেন, চালিয়ে যান!';
+    else m = `💪 পরের র‍্যাঙ্কে যেতে আর ${(list[me.dhRank - 2].score - me.score).toFixed(1)} পয়েন্ট দরকার — আপনি পারবেন!`;
+    h += c('🎯', 'আপনার স্কোর', me.score.toFixed(1), `${esc(me.dh)}-এ ${me.dhRank}/${list.length} নম্বর · টিমে ${me.teamRank} নম্বর`, 'me', `<div class="msg">${m}</div><div class="more">বিস্তারিত দেখুন →</div>`, hDSO(me));
+  } else if (who.missing) {
+    h += c('ℹ️', 'এই মাস', '—', 'নির্বাচিত মাসে আপনার নামে কোনো ডেটা নেই', 'me');
+  }
+  h += c('🏆', 'টেরিটরি স্কোর', D.territory.score.toFixed(1), 'গাজীপুর সেন্ট্রাল', '', '<div class="more">বিস্তারিত দেখুন →</div>', hOM('*'));
+  [...D.dh].sort((a, b) => (b === my) - (a === my) || a.rank - b.rank).forEach(d => {
+    h += c('🏅', esc(d.name) + (d === my ? ' (আপনার)' : ''), d.score.toFixed(1), 'ডিস্ট্রিবিউটর র‍্যাঙ্ক ' + d.rank, d === my ? 'me' : '', '<div class="more">বিস্তারিত দেখুন →</div>', hOM(d.name));
+  });
+  $('#cards').innerHTML = h;
+  const dhs = [...new Set(D.ra.map(r => r.dh))];
+  $('#fdh').innerHTML = '<option value="">সব ডিস্ট্রিবিউটর</option>' + dhs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  $('#fdh').onchange = () => { dssOpts(); draw(); }; $('#fdss').onchange = draw;
+  $('#rs').onclick = () => { $('#fdh').value = ''; dssOpts(); $('#fdss').value = ''; draw(); };
+  dssOpts(); draw();
+}
+function dssOpts() {
+  const d = $('#fdh').value;
+  const groups = [...new Set(D.teams.filter(t => !d || t.dh === d).map(t => t.dh))];
+  $('#fdss').innerHTML = '<option value="">সব ডিএসএস</option>' + groups.map(g => {
+    const o = [...new Set(D.teams.filter(t => t.dh === g).map(t => t.dss))].sort().map(s => `<option value="${esc(g + '\u0001' + s)}">${esc(tc(s))}</option>`).join('');
+    return d ? o : `<optgroup label="${esc(g)}">${o}</optgroup>`;
+  }).join('');
+}
+const th = (n, b) => `${n}<small>${b}</small>`;
+const rk = n => n <= 3 ? `<span class="rk">${MED[n - 1]}</span>` : n;
+const bar = s => `<div class="bar"><i style="width:${Math.min(100, s)}%"></i></div>`;
+const cols = lv => LV[lv].ps.map(p => th(p[1], p[2] + ' · ' + p[3]));
+const keys = lv => LV[lv].ps.map(p => p[0]);
+function podium(list, nameOf, mine) {
+  if (list.length < 3) return '';
+  return `<div class="podium">${[1, 0, 2].map(i => { const x = list[i]; return `<div class="pd p${i + 1} ${x === mine ? 'mine' : ''}"><div class="medal">${MED[i]}</div><div class="pn">${esc(nameOf(x))}${x === mine ? ' (আপনি)' : ''}</div><div class="ps">${x.score.toFixed(1)}</div><div class="step"><b>${i + 1}</b></div></div>`; }).join('')}</div>`;
+}
+function draw() {
+  const me = who.me, my = who.myDH;
+  const d = $('#fdh').value;
+  const [sd, ss] = ($('#fdss').value || '').split('\u0001');
+  const ed = d || sd || '';
+  /* ওএম */
+  let h = GC.head(['ডিস্ট্রিবিউটর', ...cols('om'), 'স্কোর', 'র‍্যাঙ্ক']);
+  [...D.dh].sort((a, b) => a.rank - b.rank).filter(x => !ed || x.name === ed).forEach(x => h += `<tr class="go ${x === my ? 'mine' : ''}" data-h="${hOM(x.name)}"><td class="l"><a href="${hOM(x.name)}">${esc(x.name)}</a></td>${keys('om').map(k => GC.pcCell(x[k])).join('')}<td><b>${x.score.toFixed(1)}</b>${bar(x.score)}</td><td>${rk(x.rank)}</td></tr>`);
+  if (!ed) { const t = D.territory; h += `<tr class="top go" data-h="${hOM('*')}"><td class="l"><a href="${hOM('*')}">🏆 টেরিটরি</a></td>${keys('om').map(k => GC.pcCell(t[k])).join('')}<td>${t.score.toFixed(1)}</td><td>—</td></tr>`; }
+  $('#tdh').innerHTML = h;
+  /* ডিএসএস — পুরো টেরিটরিতে এক র‍্যাঙ্ক */
+  const all = [...D.teams].sort((a, b) => a.rank - b.rank);
+  const l = all.filter(x => (!ed || x.dh === ed) && (!ss || x.dss === ss));
+  let tb = GC.head(['র‍্যাঙ্ক', 'ডিএসএস', 'ডিএইচ', ...cols('dss'), 'স্কোর'], 3);
+  l.forEach(x => tb += `<tr class="go ${x.rank <= 3 ? 'top' : ''} ${me && me.dh === x.dh && me.dss === x.dss ? 'mine' : ''}" data-h="${hDSS(x)}"><td class="l">${rk(x.rank)}</td><td class="l"><a href="${hDSS(x)}">${esc(tc(x.dss))}</a></td><td class="l"><small>${esc(x.dh)}</small></td>${keys('dss').map(k => GC.pcCell(x[k])).join('')}<td><b>${x.score.toFixed(1)}</b>${bar(x.score)}</td></tr>`);
+  $('#tt').innerHTML = (!ed && !ss ? podium(all, x => tc(x.dss), null) : '') + `<div class="scroll"><table>${tb}</table></div>`;
+  /* ডিএসও — প্রতি ডিএইচ-এ র‍্যাঙ্ক */
+  let r = '';
+  [...new Set(D.ra.map(x => x.dh))].filter(g => !ed || g === ed).forEach(g => {
+    const list = D.ra.filter(x => x.dh === g).sort((a, b) => a.dhRank - b.dhRank);
+    let tb2 = GC.head(['র‍্যাঙ্ক', 'ডিএসও', 'টিম (ডিএসএস)', ...cols('dso'), 'স্কোর', 'টিমে র‍্যাঙ্ক'], 3);
+    let n = 0;
+    list.forEach(x => {
+      if (ss && x.dss !== ss) return; n++;
+      tb2 += `<tr class="go ${x.dhRank <= 3 ? 'top' : ''} ${x === me ? 'mine' : ''}" data-h="${hDSO(x)}"><td>${rk(x.dhRank)}</td><td class="l"><a href="${hDSO(x)}">${esc(tc(x.name))}</a>${x === me ? ' (আপনি)' : ''}</td><td class="l">${esc(tc(x.dss))}</td>${keys('dso').map(k => GC.pcCell(x[k])).join('')}<td><b>${x.score.toFixed(1)}</b>${bar(x.score)}</td><td>${x.teamRank}</td></tr>`;
+    });
+    if (!n) return;
+    r += `<div class="dhh">🏢 ${esc(g)} · ${list.length} জন ডিএসও</div>${ss ? '' : podium(list, x => tc(x.name), me)}<div class="scroll"><table>${tb2}</table></div>`;
+  });
+  $('#tr').innerHTML = r;
+}
+document.addEventListener('click', e => {
+  const tr = e.target.closest && e.target.closest('tr[data-h]');
+  if (tr && !e.target.closest('a')) location.hash = tr.dataset.h;
+});
+
+/* ---------- বিস্তারিত পাতা ---------- */
+const nf = GC.nf, nd = GC.nd;
+function calc(rec, lv, [p, name, basis, w]) {
+  const di = GC.dayInfo(D, p, lv), V = GC.vv(rec, p, lv), { ach, trg, lm } = V;
+  const mtd = trg != null ? trg * di.day / di.dim : null;
+  const f = GC.frac(D, rec, lv, p, basis);
+  const rem = trg != null ? Math.max(0, trg - (ach || 0)) : null;
+  const gr = lm > 0 && ach != null ? (ach / lm - 1) * 100 : null;
+  return { V, name, basis, w, trg, mtd, ach, lm, gr, pct: f * 100, rem, per: rem != null ? (di.left > 0 ? rem / di.left : rem) : null, need: rem != null && trg > 0 ? rem / trg * 100 : null, left: di.left, till: di.till, p, pts: w * Math.min(f, 1) };
+}
+function renderDetail(lv, rec, title, sub) {
+  const Lx = LV[lv], rows = Lx.ps.map(p => calc(rec, lv, p));
+  const body = rows.map(r => {
+    const miss = r.trg == null;
+    const extra = r.p === 'a' && lv === 'om' ? `<small>A2M ${nf(r.V.a2m)} + D2C ${nf(r.V.d2c)} · টার্গেট A2M ${nf(r.V.a2mT)} + D2C ${r.V.d2cT == null ? 'দেওয়া নেই' : nf(r.V.d2cT)}</small>` : '';
+    return `<tr><td class="l"><b>${r.name}</b><small>${r.basis === 'MTD' ? 'MTD টার্গেটের বিপরীতে' : 'মোট (TTL) টার্গেটের বিপরীতে'} · ওজন ${r.w} · Till ${GC.fmtTill(r.till)}</small>${extra}</td>
+      <td>${nf(r.trg)}</td><td>${r.basis === 'MTD' ? nf(r.mtd) : '—'}</td><td>${nf(r.ach)}</td>
+      <td class="${r.pct >= 100 ? 'hi' : r.pct < 50 ? 'lo' : ''}"><b>${Math.round(r.pct)}%</b></td>
+      <td>${r.lm == null ? '—' : nf(r.lm)}</td><td class="${r.gr == null ? '' : r.gr >= 0 ? 'hi' : 'lo'}">${r.gr == null ? '—' : (r.gr >= 0 ? '▲ ' : '▼ ') + nd(Math.abs(r.gr)) + '%'}</td>
+      <td>${miss ? '—' : nf(r.rem)}</td><td class="need">${miss ? '—' : nd(r.per)}</td><td class="need">${r.need == null ? '—' : (r.need <= 0 ? '✅ পূর্ণ' : nd(r.need) + '%')}</td><td><b>${nd(r.pts)}</b> / ${r.w}</td></tr>`;
+  }).join('');
+  const noAch = rows.every(r => r.ach == null);
+  const left = rows[0].left;
+  $('#detail').innerHTML = `
+  <div style="margin:18px 0 0"><a class="btn ghost" href="#">← ফিরে যান</a></div>
+  <div class="panel">
+    <div class="mut">${Lx.lab}${sub ? ' · ' + esc(sub) : ''} · ${GC.monLabel(D.month)} · Till ${GC.fmtTill(D.tillDate)} · মাসের বাকি ${left} দিন</div>
+    <h2 style="font-size:26px;margin-top:2px">${esc(title)}</h2>
+    <div class="how"><b>কীভাবে পড়বেন</b>
+      <ul>
+        <li><b>মাসিক টার্গেট (TRG):</b> পুরো মাসের টার্গেট।</li>
+        <li><b>MTD টার্গেট:</b> মাসের শুরু থেকে রিপোর্টের তারিখ পর্যন্ত যতটা অর্জন করার কথা।</li>
+        <li><b>MTD অর্জন %:</b> TRX, REG, UBP${lv === 'dso' ? '' : lv === 'dss' ? ', A2M' : ', BZP'}-এর % MTD টার্গেটের বিপরীতে; SAV-VOL ও SAV-CNT-এর % মোট (TTL) টার্গেটের বিপরীতে।</li>
+        <li><b>LMTD ও MoM গ্রোথ:</b> গত মাসের একই তারিখ পর্যন্ত অর্জন এবং তার তুলনায় এ মাসে কত বেশি/কম (TRX ও UBP)।</li>
+        <li><b>পয়েন্ট:</b> ওজন × অর্জন % (সর্বোচ্চ ১০০%)।</li>
+        <li><b>প্রতিদিন প্রয়োজন:</b> বাকি দিনগুলোতে প্রতিদিন গড়ে যতটা করতে হবে।</li>
+      </ul></div>
+    ${noAch ? '<div class="msg" style="color:var(--low)">⚠️ এই পাতার জন্য প্রয়োজনীয় রিপোর্ট এখনও আপলোড হয়নি।</div>' : ''}
+    <div class="scroll"><table style="min-width:1080px">${GC.head(['প্যারামিটার', 'মাসিক টার্গেট', 'MTD টার্গেট', 'MTD অর্জন', 'MTD অর্জন %', 'LMTD', 'MoM গ্রোথ', 'বাকি', 'প্রতিদিন প্রয়োজন', 'আরও কত % বাকি', 'পয়েন্ট'])}${body}</table></div>
+    <p class="mut" style="margin-top:10px">টীকা: MTD টার্গেট = মাসিক টার্গেট × (রিপোর্টের দিন ÷ মাসের মোট দিন)। প্রতিটি রিপোর্টের নিজের Till তারিখ ধরা হয়।</p>
+    <div style="margin-top:14px;font-weight:700;color:var(--deep);font-size:18px">স্কোর: ${rec.score.toFixed(1)} / ১০০</div>
+  </div>`;
+}
+function route() {
+  if (!D || !who) return;
+  const m = location.hash.match(/^#\/d\/(dso|dss|om)\/(.+)$/);
+  if (!m) { $('#detail').hidden = true; $('#main').hidden = false; return; }
+  const lv = m[1], a = m[2].split('/').map(decodeURIComponent);
+  let rec = null, title = '', sub = '';
+  if (lv === 'dso') { rec = D.ra.find(x => x.wallet === a[0]); if (rec) { title = tc(rec.name); sub = rec.dh + ' · ' + tc(rec.dss); } }
+  else if (lv === 'dss') { rec = D.teams.find(x => x.dh === a[0] && x.dss === a[1]); if (rec) { title = tc(rec.dss); sub = rec.dh + ' · টেরিটরিতে র‍্যাঙ্ক ' + rec.rank; } }
+  else if (a[0] === '*') { rec = D.territory; title = 'গাজীপুর সেন্ট্রাল টেরিটরি'; }
+  else { rec = D.dh.find(x => x.name === a[0]); if (rec) title = rec.name; }
+  if (!rec) { location.hash = ''; return; }
+  renderDetail(lv, rec, title, sub);
+  $('#main').hidden = true; $('#detail').hidden = false; scrollTo(0, 0);
+}
+addEventListener('hashchange', route);
+</script>
+</body>
+</html>

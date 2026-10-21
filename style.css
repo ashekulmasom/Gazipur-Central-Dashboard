@@ -1,0 +1,81 @@
+:root{--pink:#E2136E;--deep:#A80B52;--bg:#FDF3F8;--line:#F0D3E2;--ink:#1B1B1F;--mut:#5C4A54;--ok:#0B5F58;--low:#92400E}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:400 16px/1.55 "Hind Siliguri",system-ui,"Segoe UI",sans-serif;background:radial-gradient(circle at 10% 0,#FFE3F0 0,transparent 40%),radial-gradient(circle at 95% 15%,#FFEFD2 0,transparent 35%),var(--bg);min-height:100vh}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,var(--pink),var(--deep));color:#fff;border-radius:24px;padding:22px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 14px 34px rgba(226,19,110,.32)}
+.badge{background:#fff;border-radius:20px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,0,0,.22);transform:rotate(-3deg);animation:bob 4s ease-in-out infinite}
+.badge img{height:78px;display:block}
+.hero h1{margin:0;font-size:30px;line-height:1.25;font-weight:700}
+.hero p{margin:4px 0 0;font-size:15px;opacity:.95}
+.till{display:inline-block;font:400 12px/1.4 system-ui,"Segoe UI",sans-serif;background:rgba(255,255,255,.2);border-radius:999px;padding:2px 10px;margin-top:6px}
+.hero .side{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.hero select{min-height:40px;width:auto;border:2px solid #fff;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:4px 12px;font:600 14px "Hind Siliguri",sans-serif}
+.hero select option{color:#1B1B1F}
+.sp{position:absolute;color:#FFE27A;animation:tw 2.4s ease-in-out infinite;pointer-events:none;font-size:20px}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-3deg)}}
+@keyframes tw{50%{opacity:.15;transform:scale(.6)}}
+nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+nav.tabs a{padding:9px 18px;border-radius:999px;background:#fff;border:2px solid var(--line);color:var(--deep);font-weight:700;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+nav.tabs a.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.who{font-size:13px;color:var(--mut);margin-left:auto;align-self:center}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 4px 14px rgba(226,19,110,.07)}
+h2{font-size:21px;margin:0 0 2px}
+.mut{color:var(--mut);font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px;transition:transform .2s,box-shadow .2s;position:relative;color:inherit;text-decoration:none;display:block}
+.card:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(226,19,110,.16)}
+.card .ic{font-size:28px}
+.card b{display:block;font:700 32px "Hind Siliguri",sans-serif;line-height:1.2}
+.card.me{background:linear-gradient(135deg,#FFF0F7,#FFF7DD);border:2px solid var(--pink)}
+.card .more{margin-top:8px;color:var(--pink);font-weight:700;font-size:14px}
+.msg{margin-top:8px;font-weight:600;color:var(--deep);font-size:14px}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+input,select,textarea{width:100%;min-height:48px;border:2px solid #D9B8C8;border-radius:12px;padding:8px 12px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:3px solid #FFC2DC;border-color:var(--pink)}
+button,a.btn{min-height:48px;border-radius:999px;padding:10px 22px;font:700 15px "Hind Siliguri",sans-serif;cursor:pointer;border:2px solid var(--pink);background:var(--pink);color:#fff;transition:transform .15s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:hover,a.btn:hover{transform:scale(1.03)}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+button.ghost,a.btn.ghost{background:#fff;color:var(--pink)}
+.hero button.ghost,.hero a.btn.ghost{border-color:#fff;background:rgba(255,255,255,.14);color:#fff;min-height:40px;padding:6px 16px}
+button.sm{min-height:36px;padding:4px 12px;font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}.filters>div{flex:1 1 220px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:660px;font-variant-numeric:tabular-nums}
+th{text-align:right;font-size:13px;color:var(--mut);padding:8px 10px;white-space:nowrap;vertical-align:bottom}
+th small{display:block;font-weight:400;font-size:10.5px;opacity:.85}
+td{padding:9px 10px;border-top:1px solid #F4E1EB;text-align:right}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+td.l small{display:block;color:var(--mut);font-size:12px}
+tr:hover td{background:#FFF5FA}
+tr.go{cursor:pointer}
+tr.top td{background:#FFF1C9;font-weight:600}
+tr.mine td{background:#FFD9EA}tr.mine td:first-child{border-left:5px solid var(--pink)}
+tr.tot td{background:#FDF3F8;font-weight:700}
+td a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--pink)}
+.hi{color:var(--ok);font-weight:700}.lo{color:var(--low)}
+.bar{height:6px;background:#F4E1EB;border-radius:3px;margin-top:3px;min-width:70px}.bar i{display:block;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--pink),#FFB300)}
+.rk{font-size:20px;line-height:1}
+.dhh{margin:22px 0 6px;font-size:18px;color:var(--deep);font-weight:700}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:10px 0 18px;flex-wrap:nowrap}
+.pd{flex:1 1 0;max-width:210px;text-align:center;min-width:0}
+.pd .medal{font-size:38px;animation:bob 3s ease-in-out infinite}
+.pd .pn{font-weight:700;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.pd .ps{font:700 20px "Hind Siliguri",sans-serif}
+.pd .step{border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:6px;color:#1B1B1F;font-size:22px}
+.p1 .step{height:92px;background:linear-gradient(#FFE27A,#F5B800)}.p2 .step{height:66px;background:linear-gradient(#EEF0F3,#C4CAD2)}.p3 .step{height:50px;background:linear-gradient(#F2C9A0,#D99A62)}
+.pd.mine .pn{color:var(--pink)}
+.gate{max-width:480px;margin:34px auto 0}
+.err{color:#B00020;font-size:15px;margin:10px 0 0;min-height:22px;font-weight:600}
+.how{background:#FFF8E1;border:1px solid #F5DFA0;border-radius:14px;padding:14px 18px;margin:14px 0}
+.how b{color:var(--deep)}
+.how ul{margin:6px 0 0;padding-left:20px}
+.how li{margin:3px 0;font-size:14.5px}
+.need{font-weight:700;color:var(--deep)}
+.seg{display:inline-flex;border:2px solid var(--pink);border-radius:999px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-radius:0;background:#fff;color:var(--pink);min-height:42px}
+.seg button.on{background:var(--pink);color:#fff}
+.chip{display:inline-block;font-size:12px;border-radius:999px;padding:1px 9px;font-weight:600;background:#FFE3F0;color:var(--deep)}
+.cf{position:fixed;top:-16px;width:10px;height:14px;z-index:9;animation:fall 3.2s linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.hero h1{font-size:23px}.badge img{height:60px}.hero{padding:18px}.hero .side{margin-left:0}}
